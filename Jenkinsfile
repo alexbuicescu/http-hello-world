@@ -57,8 +57,8 @@ pipeline {
             }
           }
         }
-      }
-        stages('Health Checking & Testing') {
+        stage('Health Checking & Testing') {
+          stages('Health Checking & Testing') {
           stage('Health Checking Server 1') {
             agent {
               label 'server1'
@@ -90,6 +90,8 @@ pipeline {
             }
           }
         }
+      }
+    }
     }
   }
 }
