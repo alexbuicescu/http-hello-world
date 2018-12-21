@@ -85,5 +85,15 @@ pipeline {
                   }
                 }
               }
+              post {
+                always {
+                    node ('server1') {
+                        sh 'docker-compose down'
+                    }
+                    node ('server2') {
+                        sh 'docker-compose down'
+                    }
+                }
+              }
           }
         }
