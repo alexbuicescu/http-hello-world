@@ -85,6 +85,7 @@ pipeline {
                   }
                 }
               }
+              }
               post {
                 always {
                     node ('server1') {
@@ -94,6 +95,5 @@ pipeline {
                         sh 'docker-compose down'
                     }
                 }
-              }
           }
         }
