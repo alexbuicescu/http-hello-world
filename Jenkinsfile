@@ -58,37 +58,38 @@ pipeline {
           }
         }
         stage('Health Checking & Testing1') {
+          agent none
           stages('Health Checking & Testing2') {
-          stage('Health Checking Server 1') {
-            agent {
-              label 'server1'
-            }
-            steps {
-              dir(path: 'Server1') {
-                sh './health.sh --url=http://localhost:8000'
+              stage('Health Checking Server 1') {
+                agent {
+                  label 'server1'
+                }
+                steps {
+                  dir(path: 'Server1') {
+                    sh './health.sh --url=http://localhost:8000'
+                  }
+                }
               }
-            }
-          }
-          stage('Health Checking Server 2') {
-            agent {
-              label 'server2'
-            }
-            steps {
-              dir(path: 'Server2') {
-                sh './health.sh --url=http://localhost:8000'
+              stage('Health Checking Server 2') {
+                agent {
+                  label 'server2'
+                }
+                steps {
+                  dir(path: 'Server2') {
+                    sh './health.sh --url=http://localhost:8000'
+                  }
+                }
               }
-            }
-          }
-          stage('Testing') {
-            agent {
-              label 'server1'
-            }
-            steps {
-              dir(path: 'Server1') {
-                sh 'echo "testing..."'
+              stage('Testing') {
+                agent {
+                  label 'server1'
+                }
+                steps {
+                  dir(path: 'Server1') {
+                    sh 'echo "testing..."'
+                  }
+                }
               }
-            }
-          }
         }
       }
     }
