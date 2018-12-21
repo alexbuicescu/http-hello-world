@@ -35,65 +35,74 @@ pipeline {
         }
       }
     }
-        stage('Starting Server 1') {
-          agent {
-            label 'server1'
-          }
-          steps {
-            dir(path: 'Server1') {
-              sh 'docker-compose up -d'
-            }
-          }
+    stage('Starting Server 1') {
+      agent {
+        label 'server1'
+      }
+      steps {
+        dir(path: 'Server1') {
+          sh 'docker-compose up -d'
         }
-        stage('Starting Server 2') {
-          agent {
-            label 'server2'
-          }
-          steps {
-            dir(path: 'Server2') {
-              sh 'docker-compose up -d'
-            }
-          }
+
+      }
+    }
+    stage('Starting Server 2') {
+      agent {
+        label 'server2'
+      }
+      steps {
+        dir(path: 'Server2') {
+          sh 'docker-compose up -d'
         }
-              stage('Health Checking Server 1') {
-                agent {
-                  label 'server1'
-                }
-                steps {
-                  dir(path: 'Server1') {
-                    sh './health.sh --url=http://localhost:8000'
-                  }
-                }
-              }
-              stage('Health Checking Server 2') {
-                agent {
-                  label 'server2'
-                }
-                steps {
-                  dir(path: 'Server2') {
-                    sh './health.sh --url=http://localhost:8000'
-                  }
-                }
-              }
-              stage('Testing') {
-                agent {
-                  label 'server1'
-                }
-                steps {
-                  dir(path: 'Server1') {
-                    sh 'echo "testing..."'
-                  }
-                }
-              }
-              }
-              post {
-                always {
-                    node ('server1') {
-                        sh 'docker-compose down'
-                    }
-                    node ('server2') {
-                        sh 'docker-compose down'
-                    }
-                }
-          }
+
+      }
+    }
+    stage('Health Checking Server 1') {
+      agent {
+        label 'server1'
+      }
+      steps {
+        dir(path: 'Server1') {
+          sh './health.sh --url=http://localhost:8000'
         }
+
+      }
+    }
+    stage('Health Checking Server 2') {
+      agent {
+        label 'server2'
+      }
+      steps {
+        dir(path: 'Server2') {
+          sh './health.sh --url=http://localhost:8000'
+        }
+
+      }
+    }
+    stage('Testing') {
+      agent {
+        label 'server1'
+      }
+      steps {
+        dir(path: 'Server1') {
+          sh 'echo "testing..."'
+        }
+
+      }
+    }
+  }
+  post {
+    always {
+      node('server1') {
+        sh 'docker-compose down'
+      }
+
+      node('server2') {
+        sh 'docker-compose down'
+      }
+
+
+    }
+
+  }
+}
