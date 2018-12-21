@@ -39,59 +39,61 @@ pipeline {
     }
     stage('Starting') {
       parallel {
-    stage('Starting Server 1') {
-      agent {
-        label 'server1'
-      }
-      steps {
-        dir(path: 'Server1') {
-          sh 'docker-compose up -d'
-        }
+        stage('Starting Server 1') {
+          agent {
+            label 'server1'
+          }
+          steps {
+            dir(path: 'Server1') {
+              sh 'docker-compose up -d'
+            }
 
-      }
-    }
-    stage('Starting Server 2') {
-      agent {
-        label 'server2'
-      }
-      steps {
-        dir(path: 'Server2') {
-          sh 'docker-compose up -d'
+          }
         }
+        stage('Starting Server 2') {
+          agent {
+            label 'server2'
+          }
+          steps {
+            dir(path: 'Server2') {
+              sh 'docker-compose up -d'
+            }
 
+          }
+        }
       }
-    }
-    }
     }
     stage('Health Checking') {
       parallel {
-    stage('Health Checking Server 1') {
-      agent {
-        label 'server1'
-      }
-      steps {
-        dir(path: 'Server1') {
-            timeout(time: 30, unit: 'SECONDS') {
-              sh './health.sh --url=http://localhost:8000'
-            }
-        }
+        stage('Health Checking Server 1') {
+          agent {
+            label 'server1'
+          }
+          steps {
+            dir(path: 'Server1') {
+              timeout(time: 30, unit: 'SECONDS') {
+                sh './health.sh --url=http://localhost:8000'
+              }
 
-      }
-    }
-    stage('Health Checking Server 2') {
-      agent {
-        label 'server2'
-      }
-      steps {
-        dir(path: 'Server2') {
-            timeout(time: 30, unit: 'SECONDS') {
-              sh './health.sh --url=http://localhost:8000'
             }
-        }
 
+          }
+        }
+        stage('Health Checking Server 2') {
+          agent {
+            label 'server2'
+          }
+          steps {
+            dir(path: 'Server2') {
+              timeout(time: 30, unit: 'SECONDS') {
+                sh './health.sh --url=http://localhost:8000'
+              }
+
+            }
+
+          }
+        }
       }
-    }
-    }
     }
     stage('Testing') {
       agent {
@@ -109,14 +111,16 @@ pipeline {
     always {
       node('server1') {
         dir(path: 'Server1') {
-        sh 'docker-compose down'
+          sh 'docker-compose down'
         }
+
       }
 
       node('server2') {
         dir(path: 'Server2') {
-        sh 'docker-compose down'
+          sh 'docker-compose down'
         }
+
       }
 
 
