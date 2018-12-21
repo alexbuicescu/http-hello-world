@@ -57,6 +57,7 @@ pipeline {
             }
           }
         }
+      }
         stages('Health Checking & Testing') {
           stage('Health Checking Server 1') {
             agent {
@@ -89,7 +90,6 @@ pipeline {
             }
           }
         }
-      }
     }
   }
 }
