@@ -37,6 +37,8 @@ pipeline {
         }
       }
     }
+    stage('Starting') {
+      parallel {
     stage('Starting Server 1') {
       agent {
         label 'server1'
@@ -59,6 +61,10 @@ pipeline {
 
       }
     }
+    }
+    }
+    stage('Health Checking') {
+      parallel {
     stage('Health Checking Server 1') {
       agent {
         label 'server1'
@@ -84,6 +90,8 @@ pipeline {
         }
 
       }
+    }
+    }
     }
     stage('Testing') {
       agent {
