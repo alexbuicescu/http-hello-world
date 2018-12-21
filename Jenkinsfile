@@ -33,9 +33,7 @@ pipeline {
                 }
             }
         }
-    }
 
-    stages {
         stage ('Building') {
             parallel {
                 stage('Build Server 1') {
