@@ -100,11 +100,15 @@ pipeline {
   post {
     always {
       node('server1') {
+        dir(path: 'Server1') {
         sh 'docker-compose down'
+        }
       }
 
       node('server2') {
+        dir(path: 'Server2') {
         sh 'docker-compose down'
+        }
       }
 
 
