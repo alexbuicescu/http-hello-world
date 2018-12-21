@@ -35,15 +35,13 @@ pipeline {
         }
       }
     }
-    stage('Integration Testing') {
-      parallel {
         stage('Starting Server 1') {
           agent {
             label 'server1'
           }
           steps {
             dir(path: 'Server1') {
-              sh 'docker-compose up'
+              sh 'docker-compose up -d'
             }
           }
         }
@@ -53,13 +51,10 @@ pipeline {
           }
           steps {
             dir(path: 'Server2') {
-              sh 'docker-compose up'
+              sh 'docker-compose up -d'
             }
           }
         }
-        stage('Health Checking & Testing1') {
-          agent none
-          stages('Health Checking & Testing2') {
               stage('Health Checking Server 1') {
                 agent {
                   label 'server1'
@@ -90,9 +85,5 @@ pipeline {
                   }
                 }
               }
+          }
         }
-      }
-    }
-    }
-  }
-}
