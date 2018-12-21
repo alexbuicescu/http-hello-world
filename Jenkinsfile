@@ -65,7 +65,9 @@ pipeline {
       }
       steps {
         dir(path: 'Server1') {
-          sh './health.sh --url=http://localhost:8000'
+            timeout(time: 30, unit: 'SECONDS') {
+              sh './health.sh --url=http://localhost:8000'
+            }
         }
 
       }
@@ -76,7 +78,9 @@ pipeline {
       }
       steps {
         dir(path: 'Server2') {
-          sh './health.sh --url=http://localhost:8000'
+            timeout(time: 30, unit: 'SECONDS') {
+              sh './health.sh --url=http://localhost:8000'
+            }
         }
 
       }
