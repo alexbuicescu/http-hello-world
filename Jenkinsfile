@@ -1,9 +1,9 @@
 pipeline {
   agent none
   stages {
-    stage('Pulling') {
+    stage('Building & Unit Testing') {
       parallel {
-        stage('Pull Server 1') {
+        stage('Building Server 1') {
           agent {
             label 'server1'
           }
@@ -11,6 +11,7 @@ pipeline {
             dir(path: 'Server1') {
               sh 'ls'
               checkout scm
+              sh 'docker-compose build'
               sh 'pwd'
               sh 'ls'
               sh 'cat test'
@@ -18,13 +19,14 @@ pipeline {
 
           }
         }
-        stage('Pull Server 2') {
+        stage('Building Server 2') {
           agent {
             label 'server2'
           }
           steps {
             dir(path: 'Server2') {
               git(branch: 'master', credentialsId: 'git-token', url: 'https://github.com/alexbuicescu/http-hello-world2')
+              sh 'docker-compose build'
               sh 'pwd'
               sh 'ls'
             }
@@ -33,31 +35,59 @@ pipeline {
         }
       }
     }
-    stage('Building') {
+    stage('Integration Testing') {
       parallel {
-        stage('Build Server 1') {
+        stage('Starting Server 1') {
           agent {
             label 'server1'
           }
           steps {
             dir(path: 'Server1') {
-              sh 'pwd'
-              sh 'ls'
-              sh 'cat test'
+              sh 'docker-compose up'
             }
-
           }
         }
-        stage('Build Server 2') {
+        stage('Starting Server 2') {
           agent {
             label 'server2'
           }
           steps {
             dir(path: 'Server2') {
-              sh 'pwd'
-              sh 'ls'
+              sh 'docker-compose up'
             }
-
+          }
+        }
+        stage('Health Checking & Testing') {
+          agent none
+          stage('Health Checking Server 1') {
+            agent {
+              label 'server1'
+            }
+            steps {
+              dir(path: 'Server1') {
+                sh './health.sh --url=http://localhost:8000'
+              }
+            }
+          }
+          stage('Health Checking Server 2') {
+            agent {
+              label 'server2'
+            }
+            steps {
+              dir(path: 'Server2') {
+                sh './health.sh --url=http://localhost:8000'
+              }
+            }
+          }
+          stage('Testing') {
+            agent {
+              label 'server1'
+            }
+            steps {
+              dir(path: 'Server1') {
+                sh 'echo "testing..."'
+              }
+            }
           }
         }
       }
