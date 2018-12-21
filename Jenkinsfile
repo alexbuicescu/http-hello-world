@@ -51,7 +51,7 @@ pipeline {
                     }
                 }
 
-                stage('Pull Server 2') {
+                stage('Build Server 2') {
                     agent {
                         label 'server2'
                     }
