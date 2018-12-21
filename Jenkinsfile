@@ -9,6 +9,7 @@ pipeline {
           }
           steps {
             dir(path: 'Server1') {
+              sh 'ls'
               checkout scm
               sh 'pwd'
               sh 'ls'
