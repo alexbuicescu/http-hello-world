@@ -10,7 +10,7 @@ pipeline {
           steps {
             dir(path: 'Server1') {
               sh 'ls'
-              sh 'echo $username'
+              sh 'echo $USER'
               checkout scm
               sh 'docker-compose build'
               sh 'pwd'
@@ -26,7 +26,7 @@ pipeline {
           }
           steps {
             dir(path: 'Server2') {
-              sh 'echo $username'
+              sh 'echo $USER'
               git(branch: 'master', credentialsId: 'git-token', url: 'https://github.com/alexbuicescu/http-hello-world2')
               sh 'docker-compose build'
               sh 'pwd'
