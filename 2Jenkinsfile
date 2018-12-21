@@ -1,0 +1,123 @@
+pipeline {
+    stages {
+        stage ('Pulling') {
+            parallel {
+                stage('Pull Server 1') {
+                    agent {
+                        label 'server1'
+                    }
+                    steps {
+                        dir('Server1') {
+                            checkout scm
+                        }
+                    }
+                }
+
+                stage('Pull Server 2') {
+                    agent {
+                        label 'server2'
+                    }
+                    steps {
+                        dir('Server1') {
+                            git branch: 'master',
+                                credentialsId: 'git-token',
+                                url: 'https://github.com/alexbuicescu/http-hello-world2'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage ('Building & Unit Testing & Run') {
+            parallel {
+                stage('Build Server 1') {
+                    agent {
+                        label 'server1'
+                    }
+                    steps {
+                        dir('CalibrationResults') {
+                            checkout scm
+                        }
+
+                        sh 'docker-compose build'
+                        sh 'docker-compose up -d'
+                    }
+                }
+
+                stage('Build Server 2') {
+                    agent {
+                        label 'server2'
+                    }
+                    steps {
+                        git branch: 'master',
+                            credentialsId: 'git-token',
+                            url: 'https://github.com/alexbuicescu/http-hello-world2'
+
+                        sh 'docker-compose build'
+                        sh 'docker-compose up -d'
+                    }
+                }
+            }
+        }
+
+        stage ('Health Checking') {
+            parallel {
+                stage('Health Checking Server 1') {
+                    agent {
+                        label 'server1'
+                    }
+                    steps {
+                        checkout scm
+
+                        sh 'docker-compose build'
+                        sh 'docker-compose up -d'
+                    }
+                }
+
+                stage('Health Checking Server 2') {
+                    agent {
+                        label 'server2'
+                    }
+                    steps {
+                        git branch: 'master',
+                            credentialsId: 'git-token',
+                            url: 'https://github.com/alexbuicescu/http-hello-world2'
+
+                        sh 'docker-compose build'
+                        sh 'docker-compose up -d'
+                    }
+                }
+            }
+        }
+
+        stage ('Integration Testing') {
+            parallel {
+                stage('Health Checking Server 1') {
+                    agent {
+                        label 'server1'
+                    }
+                    steps {
+                        checkout scm
+
+                        sh 'docker-compose build'
+                        sh 'docker-compose up -d'
+                    }
+                }
+
+                stage('Health Checking Server 2') {
+                    agent {
+                        label 'server2'
+                    }
+                    steps {
+                        git branch: 'master',
+                            credentialsId: 'git-token',
+                            url: 'https://github.com/alexbuicescu/http-hello-world2'
+
+                        sh 'docker-compose build'
+                        sh 'docker-compose up -d'
+                    }
+                }
+            }
+        }
+    }
+}
