@@ -4,10 +4,7 @@ pipeline {
     stage('Building & Unit Testing') {
       parallel {
         stage('Building Server 1') {
-          agent {
-            label 'server1'
-          }
-          steps {
+          node('server1') {
             dir(path: 'Server1') {
               sh 'ls'
               sh 'echo $USER'
@@ -21,10 +18,7 @@ pipeline {
           }
         }
         stage('Building Server 2') {
-          agent {
-            label 'server2'
-          }
-          steps {
+          node('server2') {
             dir(path: 'Server2') {
               sh 'echo $USER'
               git(branch: 'master', credentialsId: 'git-token', url: 'https://github.com/alexbuicescu/http-hello-world2')
@@ -40,10 +34,7 @@ pipeline {
     stage('Starting') {
       parallel {
         stage('Starting Server 1') {
-          agent {
-            label 'server1'
-          }
-          steps {
+          node('server1') {
             dir(path: 'Server1') {
               sh 'docker-compose up -d'
             }
@@ -51,10 +42,7 @@ pipeline {
           }
         }
         stage('Starting Server 2') {
-          agent {
-            label 'server2'
-          }
-          steps {
+          node('server2') {
             dir(path: 'Server2') {
               sh 'docker-compose up -d'
             }
@@ -66,10 +54,7 @@ pipeline {
     stage('Health Checking') {
       parallel {
         stage('Health Checking Server 1') {
-          agent {
-            label 'server1'
-          }
-          steps {
+          node('server1') {
             dir(path: 'Server1') {
               timeout(time: 30, unit: 'SECONDS') {
                 sh './health.sh --url=http://localhost:8000'
@@ -80,10 +65,7 @@ pipeline {
           }
         }
         stage('Health Checking Server 2') {
-          agent {
-            label 'server2'
-          }
-          steps {
+          node('server2') {
             dir(path: 'Server2') {
               timeout(time: 30, unit: 'SECONDS') {
                 sh './health.sh --url=http://localhost:8000'
@@ -96,10 +78,7 @@ pipeline {
       }
     }
     stage('Testing') {
-      agent {
-        label 'server1'
-      }
-      steps {
+      node('server1') {
         dir(path: 'Server1') {
           sh 'echo "testing..."'
         }
